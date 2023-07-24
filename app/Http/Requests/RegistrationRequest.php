@@ -27,7 +27,7 @@ class RegistrationRequest extends FormRequest
             'last_name' => 'required|max:30',
             'email' => 'required|email|unique:users,email,',
             'password' => 'required|min:8',
-            'phone_number' =>'required_without:email'
+            'phone_number' =>'string'
 
 
         ];
