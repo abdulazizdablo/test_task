@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Dashboard\Product\ProductController;
+use App\Http\Controllers\Dashboard\Users\UsersController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +17,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+
+
+Route::get('/show', [UserController::class, 'show']);
+Route::get('/users-products', [UsersController::class])->name('users.products');
+
+Route::middleware('is_admin')->group(function () {
+
+
+    Route::post('/assign-product', [ProductController::class, 'assignProduct'])->name('products.assign-user');
+    Route::resource('/users', [UsersController::class]);
+    Route::resource('/products', [ProductController::class]);
 });

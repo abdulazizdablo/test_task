@@ -16,9 +16,7 @@ return new class extends Migration
             $table->string('first_name', 30);
             $table->string('last_name', 30);
             $table->boolean('is_admin')->default(0);
-            //$table->string('access_token')->unique()
-                //->nullable()
-              //  ->default(null);
+          
             $table->string('email')->unique();
      
             $table->string('activation_code',4)->nullable();

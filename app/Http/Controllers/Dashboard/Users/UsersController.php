@@ -14,7 +14,11 @@ class UsersController extends Controller
      */
     public function index()
     {
-        //
+
+
+        $users = User::all();
+
+        return view('users.index')->with('users', $users);
     }
 
     /**
@@ -22,7 +26,7 @@ class UsersController extends Controller
      */
     public function create()
     {
-        //
+        return view('users.create');
     }
 
     /**
@@ -30,9 +34,11 @@ class UsersController extends Controller
      */
     public function store(RegistrationRequest $request)
     {
-        
+
 
         User::create($request->validated());
+
+        return redirect()->route('/users.index')->withMessage('User has been created successfully');
     }
 
     /**
@@ -40,23 +46,26 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        return view('user.show',['user' => $user]);
+        return view('users.show', ['user' => $user]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(User $user)
     {
-        //
+
+        return view('users.edit')->with('user', $user);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(RegistrationRequest $request,User $user)
+    public function update(RegistrationRequest $request, User $user)
     {
         $user->update($request->vaildated());
+
+        return redirect()->route('/users.index')->withMessage('User has been updated successfully');
     }
 
     /**
@@ -65,5 +74,14 @@ class UsersController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
+
+        return redirect()->route('/user.index')->withMessage('User has been deleted successfully');
+    }
+    public function userProducts(User $user)
+    {
+
+
+
+        return  view('users.products')->with('user_products', $user->products);
     }
 }

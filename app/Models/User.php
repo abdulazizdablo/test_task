@@ -60,33 +60,12 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
 
-   /* public function verifyCode()
-    {
-        // Get the verification code from the database.
-        // $verificationCode = User::where('activation_code', $code)->first()->activation_code;
-
-        // If the verification code is not found, return false.
-        // if ($verificationCode === null) {
-        //     return false;
-        //  }
-
-        // If the verification code has expired, return false.
-
-        // If the verification code is valid, mark the user's account as verified.
-        $this->activation_code = null;
-        $this->email_verified_at = Carbon::now();
-        $this->save();
-
-        return true;
-    }
-*/
 
     public function markEmailAsVerified()
     {
 
         $this->activation_code = null;
         $this->email_verified_at = Carbon::now();
-       
         $this->save();
     }
 
@@ -104,6 +83,5 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $this->activation_code = $code;
         $this->save();
-
     }
 }

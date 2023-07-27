@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
-use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\User;
 
@@ -23,23 +22,23 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-       
+
         $image_name = time() . '.' . $request->image->extension();
         $request->image->storeAs('images', $image_name);
 
 
-         Product::create([
+        Product::create([
 
-         'name' => $request->name,
-         'description' => $request->description,
-         'image' => $image_name
+            'name' => $request->name,
+            'description' => $request->description,
+            'image' => $image_name
         ]);
 
 
         return response()->json([
-          'success' => true,
-          'message' => 'Product has been created successfully'
-        
+            'success' => true,
+            'message' => 'Product has been created successfully'
+
         ]);
     }
 
@@ -54,28 +53,21 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductRequest $request,Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
 
-       // dd($request->all());
-       
+     
 
 
-       // $image_name = time() . '.' . $request->image->extension();
-       // $request->image->storeAs('images', $image_name);
+
 
         $product->update($request->validated());
-       return response()->json([
+        return response()->json([
             'success' => true,
             'message' => 'Product has been updated succefully'
-          
-          ]);
-      /*  
-          catch(\Exception $e){
 
-            //return $e->getMessage();
-        }
-*/
+        ]);
+    
     }
 
     /**
@@ -89,12 +81,13 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Product has been deleted successfully'
-          
-          ]);
+
+        ]);
     }
 
 
-    public function assignProduct(Product $product,User $user){
+    public function assignProduct(Product $product, User $user)
+    {
 
 
         $user->products()->save($product);
@@ -102,11 +95,10 @@ class ProductController extends Controller
 
 
         return response()->json([
-'success' => true,
-'message' => 'Product has been assigned to the desired User',
+            'success' => true,
+            'message' => 'Product has been assigned to the desired User',
 
-'user' => $product
+            'user' => $product
         ]);
-
     }
 }

@@ -2,123 +2,27 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\UserRegistered;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegistrationRequest;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Serviecs\CodeGeneratorService;
-use CodeGeneratorService as GlobalCodeGeneratorService;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Support\Str;
+
 
 class AuthinticationController extends Controller
 {
 
-  public function __construct()
-  {
-
-    // $this->middleware('registration_type');
-
-
-  }
 
   public function register(RegistrationRequest $request)
 
 
 
   {
-
-
-
-
-
-
-
-
-
-    /* if (!$request->filled('phone_number')) {
-
-      $user = User::create([
-
-        //array_merge($request->except('password'),
-         //['password' => Hash::make($request->password)]),
-
-         //$request->all()
-
-
-        'first_name' => $request->first_name,
-        'last_name' => $request->last_name,
-         'email' => $request->email,
-        'password' => Hash::make($request->password),
-
-
-
-
-      ]);
-      event(new UserRegistered($user));
-
-  
-    } else
-
-
-      $user = User::create([
-
-        'first_name' => $request->first_name,
-        'last_name' => $request->last_name,
-        'email' => $request->email,
-        //'phone_number' => $request->phone_number,
-        'password' => Hash::make($request->password),
-        //'access_token' => Str::random(60)
-
-
-
-
-      ]);
-
-/*
-
-$user = User::create([
-
-
-  'first_name' => $request->first_name,
-  'last_name' => $request->last_name,
-  'email' => $request->email,
-  //'phone_number' => $request->phone_number,
-  'password' => Hash::make($request->password),
-  //'access_token' => Str::random(60)
-]);
-
-   
-event(new UserRegistered($user));
-
-    $verfication_code =  mt_rand(1000, 9999);
-
-
-*/
-
-    /*User::create([$request->except('password')->
-merge(['password' => Hash::make($request->password)])
-
-
-]);*/
-
-
-
-    //dd(  array_merge(
-    //$request->all(),
-    // ['password' => Hash::make($request->password)]
-    //));
-
-
-
 
 
 
@@ -133,18 +37,10 @@ merge(['password' => Hash::make($request->password)])
 
 
     if (!$user->phone_number) {
-      //event(new UserRegistered($user));
-      // $code =  mt_rand(1000, 9999);
 
-
-      /* Mail::raw("Hi, welcome user! Please confirm this code $code ", function ($message) {
-        $message->to('abooddablo@gmail.com')
-          ->subject("ggll");
-      });*/
 
       $user->sendEmailVerificationNotification();
 
-      //    $user->update();
 
 
 
@@ -154,18 +50,9 @@ merge(['password' => Hash::make($request->password)])
 
 
       ]);
-
-
-      //return redirect()->action('Api\AuthinticationController@confirmCode');
-
-      /*if($code->checkConfirmedCode($request->code)){
-
-
-  
-}*/
     }
 
-    //  if($request->has('code') &&  $request->code === $code_service->verfication_code){
+
 
 
     Auth::login($user);
@@ -183,11 +70,6 @@ merge(['password' => Hash::make($request->password)])
 
 
 
-
-
-
-
-
   public function confirmCode(Request $request)
   {
     $code = $request->code;
@@ -195,28 +77,6 @@ merge(['password' => Hash::make($request->password)])
     $user = User::where('activation_code', $code)->first();
 
 
-
-    /*if (is_null($user)) {
-
-
-      return response()->json([
-
-        'message' => 'The activation code is not Correct'
-
-      ], 403);
-    } else {
-
-
-
-      $user->update(['is_verified' => true]);
-      return response()->json([
-
-        'message' => 'Regestraion Process is completed'
-
-      ], 201);
-    }
-
-*/
     if ($user) {
 
 
@@ -303,9 +163,6 @@ merge(['password' => Hash::make($request->password)])
 
       return response()->json(['message' => 'Verfication Link has been sent to your email']);
     }
-
-    // ? back()->with(['status' => __($status)])
-    // : back()->withErrors(['email' => __($status)]);
   }
 
 
@@ -333,10 +190,7 @@ merge(['password' => Hash::make($request->password)])
       }
     );
 
-    //return $status === Password::PASSWORD_RESET;
 
     return response()->json(['message' => 'Your Password has been changed successfully']);
-    //? redirect()->route('login')->with('status', __($status))
-    // : back()->withErrors(['email' => [__($status)]]);
   }
 }

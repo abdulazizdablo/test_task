@@ -10,21 +10,10 @@ use App\Http\Requests\RegistrationRequest;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+
+
+
 
     /**
      * Display the specified resource.
@@ -61,18 +50,14 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+
+
+
+    public function userProducts(User $user)
     {
-        //
-    }
 
-    public function userProducts(User $user){
 
-        $user->products()->paginate();
 
-        return response()->json(['message'=>  $user->products()->paginate()]);
+        return response()->json(['message' =>  $user->products()->paginate()]);
     }
 }
