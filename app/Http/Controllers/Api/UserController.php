@@ -68,4 +68,11 @@ class UserController extends Controller
     {
         //
     }
+
+    public function userProducts(User $user){
+
+        $user->products()->paginate();
+
+        return response()->json(['message'=>  $user->products()->paginate()]);
+    }
 }

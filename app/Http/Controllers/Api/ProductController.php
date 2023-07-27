@@ -15,7 +15,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        return Product::paginate();
     }
 
     /**
@@ -24,12 +24,15 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
        
+        $image_name = time() . '.' . $request->image->extension();
+        $request->image->storeAs('images', $image_name);
 
-        $product = Product::create([
 
-            'name' => $request->name,
-            'image' => $request->image,
-            'description' => $request->description
+         Product::create([
+
+         'name' => $request->name,
+         'description' => $request->description,
+         'image' => $image_name
         ]);
 
 
@@ -51,21 +54,28 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request,Product $product)
     {
-        $product->update([
-            'name' => $request->name,
-            'image' => $request->image,
-            'description' => $request->description
+
+       // dd($request->all());
+       
 
 
-        ]);
-        return response()->json([
+       // $image_name = time() . '.' . $request->image->extension();
+       // $request->image->storeAs('images', $image_name);
+
+        $product->update($request->validated());
+       return response()->json([
             'success' => true,
             'message' => 'Product has been updated succefully'
           
           ]);
+      /*  
+          catch(\Exception $e){
 
+            //return $e->getMessage();
+        }
+*/
     }
 
     /**
@@ -87,13 +97,15 @@ class ProductController extends Controller
     public function assignProduct(Product $product,User $user){
 
 
-        $user->associate($product);
+        $user->products()->save($product);
+
+
 
         return response()->json([
 'success' => true,
-'message' => 'Product has been assigned to the desired User'
+'message' => 'Product has been assigned to the desired User',
 
-
+'user' => $product
         ]);
 
     }

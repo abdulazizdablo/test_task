@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Dashboard\Users;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\RegistrationRequest;
+use App\Models\User;
 
 class UsersController extends Controller
 {
@@ -26,17 +28,19 @@ class UsersController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RegistrationRequest $request)
     {
-        //
+        
+
+        User::create($request->validated());
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        return view('user.show',['user' => $user]);
     }
 
     /**
@@ -50,16 +54,16 @@ class UsersController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(RegistrationRequest $request,User $user)
     {
-        //
+        $user->update($request->vaildated());
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthinticationController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +24,16 @@ Route::middleware('bearer_token')->group(function () {
     Route::post('register', [AuthinticationController::class, 'register']);
     Route::post('login', [AuthinticationController::class, 'login']);
     Route::post('change-password', [AuthinticationController::class, 'updatePassword']);
+    Route::post('forget-password', [AuthinticationController::class, 'forgotPassword']);
+    Route::post('reset-password', [AuthinticationController::class, 'resetPassword'])->name('password.reset');
     Route::get('show/{user}', [UserController::class, 'show']);
     Route::put('update/{user}', [UserController::class, 'update']);
+    Route::post('assign-product/{product}/{user}', [ProductController::class, 'assignProduct']);
+    Route::get('user-products/{user}', [UserController::class, 'userProducts']);
+
+    Route::apiResource('products', ProductController::class);
+    
+
+    // Route::post('store', [ProductController::class, 'store']);
 
 });

@@ -15,6 +15,9 @@ use App\Serviecs\CodeGeneratorService;
 use CodeGeneratorService as GlobalCodeGeneratorService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Str;
 
 class AuthinticationController extends Controller
 {
@@ -255,7 +258,7 @@ merge(['password' => Hash::make($request->password)])
   {
 
 
-    
+
     # Validation
     $request->validate([
       'email' => 'required',
@@ -263,11 +266,11 @@ merge(['password' => Hash::make($request->password)])
       'new_password' => 'required|confirmed',
     ]);
 
-    $user =  User::where('email',$request->email)->first();
+    $user =  User::where('email', $request->email)->first();
 
     Auth::login($user);
 
-//$user = User::where(Hash::check($request->old_password))
+    //$user = User::where(Hash::check($request->old_password))
     #Match The Old Password
     if (!Hash::check($request->old_password, Auth::user()->password)) {
       return response()->json([
@@ -284,15 +287,56 @@ merge(['password' => Hash::make($request->password)])
     return response()->json([
       'message' => 'Password changed successfully!',
     ]);
-
   }
 
 
-  public function forgotPassword(){
-$user = User
+  public function forgotPassword(Request $request)
+  {
+    $request->validate(['email' => 'required|email']);
+
+    $status = Password::sendResetLink(
+      $request->only('email')
+    );
+    //  $status === Password::RESET_LINK_SENT
+
+    if ($status === Password::RESET_LINK_SENT) {
+
+      return response()->json(['message' => 'Verfication Link has been sent to your email']);
+    }
+
+    // ? back()->with(['status' => __($status)])
+    // : back()->withErrors(['email' => __($status)]);
+  }
+
+
+  public function resetPassword(Request $request)
+  {
 
 
 
+    $request->validate([
 
+      'email' => 'required|email',
+      'password' => 'required|min:8|confirmed',
+    ]);
+
+    $status = Password::reset(
+      $request->only('email', 'password', 'password_confirmation',),
+      function (User $user, string $password) {
+        $user->forceFill([
+          'password' => Hash::make($password)
+        ]);
+
+        $user->save();
+
+        event(new PasswordReset($user));
+      }
+    );
+
+    //return $status === Password::PASSWORD_RESET;
+
+    return response()->json(['message' => 'Your Password has been changed successfully']);
+    //? redirect()->route('login')->with('status', __($status))
+    // : back()->withErrors(['email' => [__($status)]]);
   }
 }
