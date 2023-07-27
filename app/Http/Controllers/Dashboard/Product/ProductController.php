@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard\Product;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
@@ -31,8 +32,9 @@ class ProductController extends Controller
         Product::create([
 
             'name' => $request->name,
-            
-        ])
+            'image' => $request->imgae,
+            'discreption' => $request->description
+        ]);
     }
 
     /**

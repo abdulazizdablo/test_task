@@ -7,8 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Carbon;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -18,7 +21,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'phone_number'
@@ -43,15 +47,63 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-public function products(){
+    public function products()
+    {
 
- return $this->hasMany(Product::class);   
-}
+        return $this->hasMany(Product::class);
+    }
 
-public function fullName(){
+    public function fullName()
+    {
 
- return $this->first_name . ' ' . $this->last_name;
+        return $this->first_name . ' ' . $this->last_name;
+    }
 
-}
-   
+
+   /* public function verifyCode()
+    {
+        // Get the verification code from the database.
+        // $verificationCode = User::where('activation_code', $code)->first()->activation_code;
+
+        // If the verification code is not found, return false.
+        // if ($verificationCode === null) {
+        //     return false;
+        //  }
+
+        // If the verification code has expired, return false.
+
+        // If the verification code is valid, mark the user's account as verified.
+        $this->activation_code = null;
+        $this->email_verified_at = Carbon::now();
+        $this->save();
+
+        return true;
+    }
+*/
+
+    public function markEmailAsVerified()
+    {
+
+        $this->activation_code = null;
+        $this->email_verified_at = Carbon::now();
+       
+        $this->save();
+    }
+
+
+    public function sendEmailVerificationNotification()
+    {
+        // Generate a verification code.
+        $code = random_int(1000, 9999);
+
+        // Send the verification code to the user's email address.
+        Mail::raw("Hi, welcome user! Please confirm this code $code ", function ($message) {
+            $message->to('abooddablo@gmail.com')
+                ->subject("Verify your code");
+        });
+
+        $this->activation_code = $code;
+        $this->save();
+
+    }
 }

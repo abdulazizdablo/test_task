@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\User;
 
 class ProductController extends Controller
 {
@@ -19,7 +21,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
        
 
@@ -35,7 +37,7 @@ class ProductController extends Controller
           'success' => true,
           'message' => 'Product has been created successfully'
         
-        ],200);
+        ]);
     }
 
     /**
@@ -62,7 +64,7 @@ class ProductController extends Controller
             'success' => true,
             'message' => 'Product has been updated succefully'
           
-          ],200);
+          ]);
 
     }
 
@@ -76,16 +78,23 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Product has been deleted succefully'
+            'message' => 'Product has been deleted successfully'
           
-          ],200);
+          ]);
     }
 
 
-    public function assignProduct(Product $product){
+    public function assignProduct(Product $product,User $user){
 
 
-        
+        $user->associate($product);
+
+        return response()->json([
+'success' => true,
+'message' => 'Product has been assigned to the desired User'
+
+
+        ]);
 
     }
 }

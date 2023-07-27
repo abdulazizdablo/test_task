@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Services;
+use App\Services;
 
 
 class RegistrationMethod{
