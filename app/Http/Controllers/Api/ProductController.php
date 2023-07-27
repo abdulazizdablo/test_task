@@ -14,7 +14,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::paginate();
+        return
+            response()->json([
+
+                'products' =>   Product::paginate()
+
+            ]);
     }
 
     /**
@@ -45,19 +50,13 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(ProductRequest $request, Product $product)
     {
-
-     
-
 
 
 
@@ -67,7 +66,6 @@ class ProductController extends Controller
             'message' => 'Product has been updated succefully'
 
         ]);
-    
     }
 
     /**
@@ -98,7 +96,7 @@ class ProductController extends Controller
             'success' => true,
             'message' => 'Product has been assigned to the desired User',
 
-            'user' => $product
+            'user product' => $product
         ]);
     }
 }

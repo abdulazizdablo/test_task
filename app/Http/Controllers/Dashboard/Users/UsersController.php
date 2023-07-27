@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dashboard\Users;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\RegistrationRequest;
 use App\Models\User;
 

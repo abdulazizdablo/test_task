@@ -16,7 +16,11 @@
 
     <h1>Admin Dashboard</h1>
 
-    @yield('content')
+    <div class="container">
+        @yield('content')
+    </div>
+
+   
 
 </body>
 

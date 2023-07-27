@@ -1,32 +1,31 @@
 @extends('layout.dashboard')
 @section('content')
-<table id="users-table" class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Phone Number</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($user as $item)
+    <table id="users-table" class="table table-bordered table-striped">
+        <thead>
             <tr>
-                <td>{{ $item->first_name }}</td>
-                <td>{{ $item->last_name }}</td>
-                <td>{{ $item->email }}</td>
-                <td>{{ $item->phone_number }}</td>
-                <td>{{ $item->created_at }}</td>
-                <td>{{ $item->updated_at }}</td>
-        @endforeach
-    </tbody>
-</table>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+            </tr>
+        </thead>
+        <tbody>
 
-<script>
-    $(document).ready(function() {
-        $('#users-table').DataTable();
-    });
-</script>
+            <tr>
+                <td>{{ $user->first_name }}</td>
+                <td>{{ $user->last_name }}</td>
+                <td>{{ $user->email }}</td>
+                <td>{{ $user->phone_number }}</td>
+                <td>{{ $user->created_at }}</td>
+                <td>{{ $user->updated_at }}</td>
 
+        </tbody>
+    </table>
+
+    <script>
+        $(document).ready(function() {
+            $('#users-table').DataTable();
+        });
+    </script>

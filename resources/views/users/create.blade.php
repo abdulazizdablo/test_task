@@ -32,3 +32,4 @@
         <input type="password" name="phone_number" placeholder="phone_number" id="phone_number">
         <input type="submit" value="Create User">
     </form>
+    @endsection

@@ -47,5 +47,6 @@
             $('#users-table').DataTable();
         });
     </script>
+    @endsection
 
     

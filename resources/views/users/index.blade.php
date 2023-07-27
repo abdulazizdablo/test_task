@@ -1,7 +1,5 @@
 @extends('layout.dashboard')
 @section('content')
-    <!DOCTYPE html>
-    <html lang="en">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -34,9 +32,17 @@
                                 <td>{{ $user->updated_at }}</td>
 
                                 <td>
-                                    <a href="{{ route('users.edit', $user) }}" class="btn btn-primary">Edit</a>
-                                    <a href="{{ route('users.destroy', $user) }}" class="btn btn-danger">Delete</a>
-                                    <a href="{{ route('users.products', $user) }}" class="btn btn-success">Products</a>
+                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST">
+
+                                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary">Edit</a>
+                                        <a href="{{ route('users.products', $user->id) }}"
+                                            class="btn btn-success">Products</a>
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+
+                                        @csrf
+                                        @method('DELETE')
+
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
@@ -50,7 +56,4 @@
             $('#users-table').DataTable();
         });
     </script>
-
-
-    </html>
 @endsection

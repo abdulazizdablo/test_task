@@ -41,10 +41,6 @@ class AuthinticationController extends Controller
 
       $user->sendEmailVerificationNotification();
 
-
-
-
-
       return response()->json([
         'message' => "Verfiaction Code has been sent to your email inbox please confirm it"
 
@@ -83,10 +79,20 @@ class AuthinticationController extends Controller
       $user->markEmailAsVerified();
       return response()->json([
         'message' => 'Account activated',
+        'headers' => [
+
+          'Accept' => 'application/json',
+        ]
+
       ]);
     } else {
       return response()->json([
         'message' => 'Invalid verification code',
+        'headers' => [
+
+          'Accept' => 'application/json',
+        ]
+
       ], 401);
     }
   }
@@ -102,16 +108,24 @@ class AuthinticationController extends Controller
     if (!Auth::attempt($credentials)) {
       return response()->json([
         'message' => 'Unauthorized',
+        'headers' => [
+
+          'Accept' => 'application/json',
+        ]
+
       ], 401);
     } else {
 
       return response()->json([
         'message' => 'You have been logged in succefuly',
+        'headers' => [
+
+          'Accept' => 'application/json',
+        ]
+
       ]);
     }
   }
-
-
 
 
   public function updatePassword(Request $request)
@@ -135,6 +149,11 @@ class AuthinticationController extends Controller
     if (!Hash::check($request->old_password, Auth::user()->password)) {
       return response()->json([
         'message' => 'Incorrect Confirmed Password Please check the entered password',
+        'headers' => [
+
+          'Accept' => 'application/json',
+        ]
+
       ]);
     }
 
@@ -146,6 +165,11 @@ class AuthinticationController extends Controller
 
     return response()->json([
       'message' => 'Password changed successfully!',
+      'headers' => [
+
+        'Accept' => 'application/json',
+      ]
+
     ]);
   }
 
@@ -161,15 +185,19 @@ class AuthinticationController extends Controller
 
     if ($status === Password::RESET_LINK_SENT) {
 
-      return response()->json(['message' => 'Verfication Link has been sent to your email']);
+      return response()->json([
+        'message' => 'Verfication Link has been sent to your email',
+        'headers' => [
+
+          'Accept' => 'application/json',
+        ]
+      ]);
     }
   }
 
 
   public function resetPassword(Request $request)
   {
-
-
 
     $request->validate([
 
@@ -191,6 +219,13 @@ class AuthinticationController extends Controller
     );
 
 
-    return response()->json(['message' => 'Your Password has been changed successfully']);
+    return response()->json([
+      'message' => 'Your Password has been changed successfully',
+      'headers' => [
+
+        'Accept' => 'application/json',
+      ]
+
+    ]);
   }
 }

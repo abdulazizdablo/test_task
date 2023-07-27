@@ -32,6 +32,7 @@ Route::middleware('bearer_token')->group(function () {
     
     Route::get('/show/{user}', [UserController::class, 'show']);
     Route::put('/update/{user}', [UserController::class, 'update']);
+    
     Route::post('/assign-product/{product}/{user}', [ProductController::class, 'assignProduct']);
     Route::get('/user-products/{user}', [UserController::class, 'userProducts']);
 
