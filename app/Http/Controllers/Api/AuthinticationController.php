@@ -20,11 +20,7 @@ class AuthinticationController extends Controller
 
   public function register(RegistrationRequest $request)
 
-
-
   {
-
-
 
     $user = User::create(
 

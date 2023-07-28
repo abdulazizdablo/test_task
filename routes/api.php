@@ -24,6 +24,8 @@ Route::middleware('bearer_token')->group(function () {
 
 
     Route::post('/register', [AuthinticationController::class, 'register']);
+    Route::post('/verify-code', [AuthinticationController::class, 'confirmCode']);
+
     Route::post('/login', [AuthinticationController::class, 'login']);
 
     Route::post('/change-password', [AuthinticationController::class, 'updatePassword']);
