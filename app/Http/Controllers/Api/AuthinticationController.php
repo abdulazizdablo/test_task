@@ -47,7 +47,7 @@ class AuthinticationController extends Controller
 
 
 
-    Auth::login($user);
+  
     return response()->json([
       'success' => true,
       'message' => 'You have been succefully registered',
@@ -64,31 +64,28 @@ class AuthinticationController extends Controller
 
   public function confirmCode(Request $request)
   {
-    $code = $request->code;
+    $activation_code = $request->user()->code;
 
-    $user = User::where('activation_code', $code)->first();
-
-
-    if ($user) {
-
-
-      $user->markEmailAsVerified();
+    try {
+      $user = User::where('activation_code', $activation_code)->first();
+  
+      if ($user) {
+        $user->markEmailAsVerified();
+        return response()->json([
+          'message' => 'Account activated',
+          'headers' => [
+            'Accept' => 'application/json',
+          ]
+        ]);
+      } else {
+        throw new \Exception('Invalid verification code');
+      }
+    } catch (\Exception $e) {
       return response()->json([
-        'message' => 'Account activated',
+        'message' => $e->getMessage(),
         'headers' => [
-
           'Accept' => 'application/json',
         ]
-
-      ]);
-    } else {
-      return response()->json([
-        'message' => 'Invalid verification code',
-        'headers' => [
-
-          'Accept' => 'application/json',
-        ]
-
       ], 401);
     }
   }
@@ -121,14 +118,13 @@ class AuthinticationController extends Controller
       'old_password' => 'required',
       'new_password' => 'required|confirmed',
     ]);
+    $user = $request->user();
 
-    $user =  User::where('email', $request->email)->first();
-
-    Auth::login($user);
+    
 
     //$user = User::where(Hash::check($request->old_password))
     #Match The Old Password
-    if (!Hash::check($request->old_password, Auth::user()->password)) {
+    if (!Hash::check($request->old_password, $user->password)) {
       return response()->json([
         'message' => 'Incorrect Confirmed Password Please check the entered password',
         'headers' => [
@@ -141,7 +137,7 @@ class AuthinticationController extends Controller
 
 
     #Update the new Password
-    User::whereId(Auth::user()->id)->update([
+    User::whereId($user->id)->update([
       'password' => Hash::make($request->new_password)
     ]);
 
@@ -160,21 +156,25 @@ class AuthinticationController extends Controller
   {
     $request->validate(['email' => 'required|email']);
 
-    $status = Password::sendResetLink(
-      $request->only('email')
-    );
-    //  $status === Password::RESET_LINK_SENT
+  $status = Password::sendResetLink(
+    $request->only('email')
+  );
 
-    if ($status === Password::RESET_LINK_SENT) {
-
-      return response()->json([
-        'message' => 'Verfication Link has been sent to your email',
-        'headers' => [
-
-          'Accept' => 'application/json',
-        ]
-      ]);
-    }
+  if ($status === Password::RESET_LINK_SENT) {
+    return response()->json([
+      'message' => 'Verfication Link has been sent to your email',
+      'headers' => [
+        'Accept' => 'application/json',
+      ]
+    ]);
+  } else {
+    return response()->json([
+      'message' => 'An error occurred. Please try again later.',
+      'headers' => [
+        'Accept' => 'application/json',
+      ]
+    ], 400);
+  }
   }
 
 
