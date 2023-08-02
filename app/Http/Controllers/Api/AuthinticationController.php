@@ -100,28 +100,14 @@ class AuthinticationController extends Controller
   {
     $credentials = $request->validated();
 
-
-    if (!Auth::attempt($credentials)) {
-      return response()->json([
-        'message' => 'Unauthorized',
-        'headers' => [
-
-          'Accept' => 'application/json',
-        ]
-
-      ], 401);
-    } else {
-
-      return response()->json([
-        'message' => 'You have been logged in succefuly',
-        'headers' => [
-
-          'Accept' => 'application/json',
-        ]
-
-      ]);
-    }
+    if (Auth::attempt($credentials)) {
+      $token = Auth::user()->createToken('Personal Access Token')->accessToken;
+      return response()->json(['token' => $token]);
+  } else {
+      return response()->json(['error' => 'Unauthorized'], 401);
   }
+}
+  
 
 
   public function updatePassword(Request $request)

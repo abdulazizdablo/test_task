@@ -87,6 +87,24 @@ class ProductController extends Controller
     public function assignProduct(Product $product, User $user)
     {
 
+       $check_assigned =  User::wherehas('products',function($q) use($user){
+
+       $q->where('user_id',$user->id);
+
+        });
+
+        if($check_assigned){
+
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Procut is already assigned to user',
+    
+                'user product' => $product
+            ]);
+        } 
+        
+
 
         $user->products()->save($product);
 
