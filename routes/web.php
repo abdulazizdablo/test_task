@@ -20,7 +20,6 @@ Route::get('/', function () {
 });
 
 
-
 Route::get('/show', [UserController::class, 'show']);
 Route::get('/users-products', [UsersController::class])->name('users.products');
 

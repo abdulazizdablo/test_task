@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::middleware('bearer_token')->group(function () {
+Route::middleware(['bearer_token', 'throttle:60,1'])->group(function () {
 
 
     Route::post('/register', [AuthinticationController::class, 'register']);
@@ -31,10 +31,10 @@ Route::middleware('bearer_token')->group(function () {
     Route::post('/change-password', [AuthinticationController::class, 'updatePassword']);
     Route::post('/forget-password', [AuthinticationController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthinticationController::class, 'resetPassword'])->name('password.reset');
-    
+
     Route::get('/show/{user}', [UserController::class, 'show']);
     Route::put('/update/{user}', [UserController::class, 'update']);
-    
+
     Route::post('/assign-product/{product}/{user}', [ProductController::class, 'assignProduct']);
     Route::get('/user-products/{user}', [UserController::class, 'userProducts']);
 

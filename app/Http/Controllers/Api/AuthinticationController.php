@@ -23,32 +23,28 @@ class AuthinticationController extends Controller
   {
 
     $user = User::create(
-
-
-      array_merge(
-        $request->validated(),
+   
+        $request->validated()+
         ['password' => Hash::make($request->password)]
-      )
+      
     );
 
 
     if (!$user->phone_number) {
 
-
       $user->sendEmailVerificationNotification();
 
       return response()->json([
         'message' => "Verfiaction Code has been sent to your email inbox please confirm it"
-
-
       ]);
     }
 
 
 
 
-  
+
     return response()->json([
+      
       'success' => true,
       'message' => 'You have been succefully registered',
       'headers' => [
@@ -68,7 +64,7 @@ class AuthinticationController extends Controller
 
     try {
       $user = User::where('activation_code', $activation_code)->first();
-  
+
       if ($user) {
         $user->markEmailAsVerified();
         return response()->json([
@@ -100,11 +96,11 @@ class AuthinticationController extends Controller
     if (Auth::attempt($credentials)) {
       $token = Auth::user()->createToken('Personal Access Token')->accessToken;
       return response()->json(['token' => $token]);
-  } else {
+    } else {
       return response()->json(['error' => 'Unauthorized'], 401);
+    }
   }
-}
-  
+
 
 
   public function updatePassword(Request $request)
@@ -120,10 +116,9 @@ class AuthinticationController extends Controller
     ]);
     $user = $request->user();
 
-    
 
-    //$user = User::where(Hash::check($request->old_password))
-    #Match The Old Password
+
+
     if (!Hash::check($request->old_password, $user->password)) {
       return response()->json([
         'message' => 'Incorrect Confirmed Password Please check the entered password',
@@ -136,7 +131,7 @@ class AuthinticationController extends Controller
     }
 
 
-    #Update the new Password
+
     User::whereId($user->id)->update([
       'password' => Hash::make($request->new_password)
     ]);
@@ -156,25 +151,25 @@ class AuthinticationController extends Controller
   {
     $request->validate(['email' => 'required|email']);
 
-  $status = Password::sendResetLink(
-    $request->only('email')
-  );
+    $status = Password::sendResetLink(
+      $request->only('email')
+    );
 
-  if ($status === Password::RESET_LINK_SENT) {
-    return response()->json([
-      'message' => 'Verfication Link has been sent to your email',
-      'headers' => [
-        'Accept' => 'application/json',
-      ]
-    ]);
-  } else {
-    return response()->json([
-      'message' => 'An error occurred. Please try again later.',
-      'headers' => [
-        'Accept' => 'application/json',
-      ]
-    ], 400);
-  }
+    if ($status === Password::RESET_LINK_SENT) {
+      return response()->json([
+        'message' => 'Verfication Link has been sent to your email',
+        'headers' => [
+          'Accept' => 'application/json',
+        ]
+      ]);
+    } else {
+      return response()->json([
+        'message' => 'An error occurred. Please try again later.',
+        'headers' => [
+          'Accept' => 'application/json',
+        ]
+      ], 400);
+    }
   }
 
 

@@ -2,18 +2,25 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Carbon;
+use App\Services\ActivationCodeService;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+
+public function __construct(private ActivationCodeService $code_service)
+{
+    
+}
 
     /**
      * The attributes that are mass assignable.
@@ -47,7 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    public function products()
+    public function products():HasMany
     {
 
         return $this->hasMany(Product::class);
@@ -65,19 +72,18 @@ class User extends Authenticatable implements MustVerifyEmail
     {
 
         $this->activation_code = null;
-        $this->email_verified_at = Carbon::now();
+        $this->email_verified_at = now();
         $this->save();
     }
 
 
-    public function sendEmailVerificationNotification()
+    public function sendEmailVerificationNotification( )
     {
         // Generate a verification code.
-        $code = random_int(1000, 9999);
-
+   $code = $this->code_service->generateActivationCode();
         // Send the verification code to the user's email address.
         Mail::raw("Hi, welcome user! Please confirm this code $code ", function ($message) {
-            $message->to('abooddablo@gmail.com')
+            $message->to($this->email)
                 ->subject("Verify your code");
         });
 

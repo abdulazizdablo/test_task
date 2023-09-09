@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class CreateProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,18 +22,9 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-
-            'email' => 'required_without:phone_number',
-            'phone_number' => 'required_without:email',
-            'password' => 'required'
-            
+          'name' => 'required|max:40',
+         'description' =>'required|max:255',
+         'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048'
         ];
-    }
-    protected function failedValidation(Validator $validator)
-    {
-        throw new ValidationException($validator, response()->json([
-            'message' => 'Validation failed',
-            'errors' => $validator->errors(),
-        ], 422));
     }
 }

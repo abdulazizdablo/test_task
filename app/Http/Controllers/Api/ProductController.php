@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Models\User;
+use App\Http\Requests\CreateProductRequest;
+use App\Http\Requests\EditProductRequest;
 
 class ProductController extends Controller
 {
@@ -17,7 +19,9 @@ class ProductController extends Controller
         return
             response()->json([
 
-                'products' =>   Product::paginate()
+                'success' => true,
+                'message' => 'Here the lists of Products',
+                'products' =>   Product::paginate(20)
 
             ]);
     }
@@ -25,24 +29,39 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductRequest $request)
+    public function store(CreateProductRequest $request)
     {
+
+try{
 
         $image_name = time() . '.' . $request->image->extension();
         $request->image->storeAs('images', $image_name);
 
 
-        Product::create([
+        $product =  Product::create([
 
             'name' => $request->name,
             'description' => $request->description,
             'image' => $image_name
         ]);
+    }
 
+
+    catch(\Exception $e){
+
+return response()->json([
+'success' => false,
+'message' => $e->getMessage(),
+
+])
+
+
+    }
 
         return response()->json([
             'success' => true,
-            'message' => 'Product has been created successfully'
+            'message' => 'Product has been created successfully',
+            'data' =>  $product
 
         ]);
     }
@@ -55,16 +74,17 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductRequest $request, Product $product)
+    public function update(EditProductRequest $request, Product $product)
     {
 
 
 
-        $product->update($request->validated());
+        tap($product)->update($request->validated());
+
         return response()->json([
             'success' => true,
-            'message' => 'Product has been updated succefully'
-
+            'message' => 'Product has been updated successfully',
+            'data' => $product
         ]);
     }
 
@@ -87,34 +107,29 @@ class ProductController extends Controller
     public function assignProduct(Product $product, User $user)
     {
 
-       $check_assigned =  User::wherehas('products',function($q) use($user){
+        $check_assigned =  User::wherehas('products', function ($q) use ($user) {
 
-       $q->where('user_id',$user->id);
+            $q->where('user_id', $user->id);
+        })->exists();
 
-        });
-
-        if($check_assigned){
+        if ($check_assigned) {
 
 
             return response()->json([
                 'success' => false,
                 'message' => 'Procut is already assigned to user',
-    
                 'user product' => $product
             ]);
-        } 
-        
 
+        } else {
 
-        $user->products()->save($product);
+            $user->products()->save($product);
 
-
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Product has been assigned to the desired User',
-
-            'user product' => $product
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Product has been assigned to the desired User',
+                'user product' => $product
+            ]);
+        }
     }
 }

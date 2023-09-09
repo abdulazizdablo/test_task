@@ -37,7 +37,7 @@ class ProductController extends Controller
 
         Product::create($request->validated());
 
-        return redirect()->route('/products.index')->withMessage('Product has been created succesfully');
+        return redirect()->route('products.index')->withMessage('Product has been created succesfully');
     }
 
     /**

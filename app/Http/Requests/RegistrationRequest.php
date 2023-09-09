@@ -24,16 +24,24 @@ class RegistrationRequest extends FormRequest
 
 
 
-    
+
         return [
-             
+
             'first_name' => 'required|max:30',
             'last_name' => 'required|max:30',
             'email' => 'required|email|unique:users,email,',
             'password' => 'required|min:8',
-            'phone_number' =>'string|nullable'
+            'phone_number' => 'string|nullable'
 
 
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new ValidationException($validator, response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], 422));
     }
 }
