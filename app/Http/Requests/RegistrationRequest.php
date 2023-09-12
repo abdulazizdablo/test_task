@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegistrationRequest extends FormRequest
+class RegistrationRequest extends BaseApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -37,11 +37,4 @@ class RegistrationRequest extends FormRequest
         ];
     }
 
-    protected function failedValidation(Validator $validator)
-    {
-        throw new ValidationException($validator, response()->json([
-            'message' => 'Validation failed',
-            'errors' => $validator->errors(),
-        ], 422));
-    }
 }

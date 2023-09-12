@@ -8,6 +8,7 @@ use App\Http\Requests\ActivationCodeRequest;
 use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegistrationRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
-
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class AuthinticationController extends Controller
 {
@@ -24,6 +25,8 @@ class AuthinticationController extends Controller
   public function register(RegistrationRequest $request)
 
   {
+
+
 
     $user = User::create(
 
@@ -40,7 +43,7 @@ class AuthinticationController extends Controller
       return response()->json([
         'success' => true,
         'message' => "Verfiaction Code has been sent to your email inbox please confirm it",
-        
+
 
       ]);
     }
@@ -78,7 +81,7 @@ class AuthinticationController extends Controller
 
           'success' => true,
           'message' => 'Account activated',
-         
+
 
           'headers' => [
             'Accept' => 'application/json',
@@ -113,8 +116,10 @@ class AuthinticationController extends Controller
         'token' => $token
       ]);
     } else {
-      return response()->json(['success' => true,
-    'message' => 'an error occured please try again'], 401);
+      return response()->json([
+        'success' => true,
+        'message' => 'an error occured please try again'
+      ], 401);
     }
   }
 
@@ -187,14 +192,9 @@ class AuthinticationController extends Controller
   }
 
 
-  public function resetPassword(Request $request)
+  public function resetPassword(ResetPasswordRequest $request)
   {
 
-    $request->validate([
-
-      'email' => 'required|email',
-      'password' => 'required|min:8|confirmed',
-    ]);
 
     $status = Password::reset(
       $request->only('email', 'password', 'password_confirmation',),
@@ -210,14 +210,23 @@ class AuthinticationController extends Controller
     );
 
 
-    return response()->json([
-      'success' => true,
-      'message' => 'Your Password has been changed successfully',
-      'headers' => [
+    if ($status) {
+      return response()->json([
+        'success' => true,
+        'message' => 'Your Password has been changed successfully',
+        'headers' => [
 
-        'Accept' => 'application/json',
-      ]
+          'Accept' => 'application/json',
+        ]
 
-    ]);
+      ]);
+    } else {
+
+
+      throw new HttpResponseException(response()->json([
+        'status' => false,
+        'message' => 'Erorr ocurred'
+      ]), 400);
+    }
   }
 }
