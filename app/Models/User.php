@@ -17,10 +17,9 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable;
 
 
-public function __construct(private ActivationCodeService $code_service)
-{
-    
-}
+    public function __construct(private ActivationCodeService $code_service)
+    {
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -54,7 +53,7 @@ public function __construct(private ActivationCodeService $code_service)
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    public function products():HasMany
+    public function products(): HasMany
     {
 
         return $this->hasMany(Product::class);
@@ -77,17 +76,17 @@ public function __construct(private ActivationCodeService $code_service)
     }
 
 
-    public function sendEmailVerificationNotification( )
+    public function sendEmailVerificationNotification()
     {
         // Generate a verification code.
-   $code = $this->code_service->generateActivationCode();
+        $code = $this->code_service->generateActivationCode();
         // Send the verification code to the user's email address.
         Mail::raw("Hi, welcome user! Please confirm this code $code ", function ($message) {
             $message->to($this->email)
                 ->subject("Verify your code");
         });
 
-        $this->activation_code = $code;
+        $this->activation_code = bcrypt($code);
         $this->save();
     }
 }

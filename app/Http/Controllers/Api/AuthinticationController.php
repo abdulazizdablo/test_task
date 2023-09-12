@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ActivationCodeRequest;
+use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegistrationRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -23,10 +26,10 @@ class AuthinticationController extends Controller
   {
 
     $user = User::create(
-   
-        $request->validated()+
+
+      $request->validated() +
         ['password' => Hash::make($request->password)]
-      
+
     );
 
 
@@ -35,7 +38,10 @@ class AuthinticationController extends Controller
       $user->sendEmailVerificationNotification();
 
       return response()->json([
-        'message' => "Verfiaction Code has been sent to your email inbox please confirm it"
+        'success' => true,
+        'message' => "Verfiaction Code has been sent to your email inbox please confirm it",
+        'data' => route('/verify-code')
+
       ]);
     }
 
@@ -44,9 +50,10 @@ class AuthinticationController extends Controller
 
 
     return response()->json([
-      
+
       'success' => true,
-      'message' => 'You have been succefully registered',
+      'message' => 'You have been successfully registered',
+
       'headers' => [
 
         'Accept' => 'application/json',
@@ -58,7 +65,7 @@ class AuthinticationController extends Controller
 
 
 
-  public function confirmCode(Request $request)
+  public function confirmCode(ActivationCodeRequest $request)
   {
     $activation_code = $request->user()->code;
 
@@ -68,7 +75,11 @@ class AuthinticationController extends Controller
       if ($user) {
         $user->markEmailAsVerified();
         return response()->json([
+
+          'success' => true,
           'message' => 'Account activated',
+          'data' => route('/index'),
+
           'headers' => [
             'Accept' => 'application/json',
           ]
@@ -78,6 +89,7 @@ class AuthinticationController extends Controller
       }
     } catch (\Exception $e) {
       return response()->json([
+        'success' => false,
         'message' => $e->getMessage(),
         'headers' => [
           'Accept' => 'application/json',
@@ -95,7 +107,11 @@ class AuthinticationController extends Controller
 
     if (Auth::attempt($credentials)) {
       $token = Auth::user()->createToken('Personal Access Token')->accessToken;
-      return response()->json(['token' => $token]);
+      return response()->json([
+        'success' => true,
+        'message' => 'You have been logged in successfully',
+        'token' => $token
+      ]);
     } else {
       return response()->json(['error' => 'Unauthorized'], 401);
     }
@@ -103,17 +119,13 @@ class AuthinticationController extends Controller
 
 
 
-  public function updatePassword(Request $request)
+  public function updatePassword(UpdatePasswordRequest $request)
   {
 
 
 
     # Validation
-    $request->validate([
-      'email' => 'required',
-      'old_password' => 'required',
-      'new_password' => 'required|confirmed',
-    ]);
+
     $user = $request->user();
 
 
@@ -121,6 +133,7 @@ class AuthinticationController extends Controller
 
     if (!Hash::check($request->old_password, $user->password)) {
       return response()->json([
+        'success' => false,
         'message' => 'Incorrect Confirmed Password Please check the entered password',
         'headers' => [
 
@@ -128,28 +141,28 @@ class AuthinticationController extends Controller
         ]
 
       ]);
+    } else {
+
+      User::whereId($user->id)->update([
+        'password' => Hash::make($request->new_password)
+      ]);
+
+      return response()->json([
+        'success' => true,
+        'message' => 'Password changed successfully!',
+        'headers' => [
+
+          'Accept' => 'application/json',
+        ]
+
+
+      ]);
     }
-
-
-
-    User::whereId($user->id)->update([
-      'password' => Hash::make($request->new_password)
-    ]);
-
-    return response()->json([
-      'message' => 'Password changed successfully!',
-      'headers' => [
-
-        'Accept' => 'application/json',
-      ]
-
-    ]);
   }
 
 
-  public function forgotPassword(Request $request)
+  public function forgotPassword(ForgetPasswordRequest $request)
   {
-    $request->validate(['email' => 'required|email']);
 
     $status = Password::sendResetLink(
       $request->only('email')
@@ -157,6 +170,7 @@ class AuthinticationController extends Controller
 
     if ($status === Password::RESET_LINK_SENT) {
       return response()->json([
+        'success' => true,
         'message' => 'Verfication Link has been sent to your email',
         'headers' => [
           'Accept' => 'application/json',
@@ -164,6 +178,7 @@ class AuthinticationController extends Controller
       ]);
     } else {
       return response()->json([
+        'success' => false,
         'message' => 'An error occurred. Please try again later.',
         'headers' => [
           'Accept' => 'application/json',
@@ -197,6 +212,7 @@ class AuthinticationController extends Controller
 
 
     return response()->json([
+      'success' => true,
       'message' => 'Your Password has been changed successfully',
       'headers' => [
 
