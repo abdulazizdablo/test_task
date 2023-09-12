@@ -40,7 +40,7 @@ class AuthinticationController extends Controller
       return response()->json([
         'success' => true,
         'message' => "Verfiaction Code has been sent to your email inbox please confirm it",
-        'data' => route('/verify-code')
+        
 
       ]);
     }
@@ -78,7 +78,7 @@ class AuthinticationController extends Controller
 
           'success' => true,
           'message' => 'Account activated',
-          'data' => route('/index'),
+         
 
           'headers' => [
             'Accept' => 'application/json',
@@ -113,7 +113,8 @@ class AuthinticationController extends Controller
         'token' => $token
       ]);
     } else {
-      return response()->json(['error' => 'Unauthorized'], 401);
+      return response()->json(['success' => true,
+    'message' => 'an error occured please try again'], 401);
     }
   }
 
@@ -127,8 +128,6 @@ class AuthinticationController extends Controller
     # Validation
 
     $user = $request->user();
-
-
 
 
     if (!Hash::check($request->old_password, $user->password)) {
